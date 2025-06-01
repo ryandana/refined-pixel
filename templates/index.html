@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refined Pixel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Material You 3 Color Tokens
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        surface: {
+                            dim: '#131318',
+                            default: '#1a1a1f',
+                            bright: '#413f4a',
+                            container: {
+                                lowest: '#0e0e13',
+                                low: '#1a1a1f',
+                                default: '#1e1e24',
+                                high: '#28282f',
+                                highest: '#33333a'
+                            }
+                        },
+                        outline: {
+                            default: '#938f94',
+                            variant: '#48464c'
+                        }
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                        'scale-in': 'scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        'slide-up': 'slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 40px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(14, 165, 233, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(14, 165, 233, 0.6);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .shimmer-bg {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .material-surface {
+            background: linear-gradient(135deg, rgba(30, 30, 36, 0.9), rgba(40, 40, 47, 0.7));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(147, 143, 148, 0.2);
+        }
+
+        .floating-action {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-action:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 48px rgba(14, 165, 233, 0.6);
+        }
+
+        .model-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .model-card-hover:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(14, 165, 233, 0.2);
+        }
+
+        .progress-gradient {
+            background: linear-gradient(90deg, #0ea5e9, #7dd3fc, #0ea5e9);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+        }
+
+        .drag-over {
+            background: rgba(14, 165, 233, 0.1) !important;
+            border-color: #0ea5e9 !important;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="text-white">
+    <div class="relative overflow-hidden">
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute top-10 left-10 w-72 h-72 bg-primary-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+            <div class="absolute top-40 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
+            <div class="absolute bottom-10 left-40 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+        </div>
+
+        <div class="relative container mx-auto px-6 py-16">
+            <div class="text-center mb-16 animate-fade-in-up">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary-500 to-primary-600 rounded-3xl mb-8 animate-pulse-glow">
+                    <span class="material-icons text-4xl text-white">auto_fix_high</span>
+                </div>
+                <h1 class="text-6xl md:text-7xl font-bold bg-gradient-to-r from-white via-blue-100 to-primary-300 bg-clip-text text-transparent mb-4">
+                    Refined Pixel
+                </h1>
+                <p class="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+                    Remove backgrounds and enhance image locally!</p>
+            </div>
+
+            <div class="max-w-5xl mx-auto">
+                <div class="material-surface rounded-3xl p-8 shadow-2xl animate-scale-in">
+                    <div class="flex bg-surface-container-low rounded-2xl p-2 mb-8">
+                        <button class="tab flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl font-medium transition-all duration-300 active" onclick="switchTab('bg-remove')" data-tab="bg-remove">
+                            <span class="material-icons">layers_clear</span>
+                            Background Removal
+                        </button>
+                        <button class="tab flex-1 flex items-center justify-center gap-3 py-4 px-6 rounded-xl font-medium transition-all duration-300" onclick="switchTab('upscale')" data-tab="upscale">
+                            <span class="material-icons">high_quality</span>
+                            Image Enhancement
+                        </button>
+                    </div>
+
+                    <div id="bg-models" class="models-section mb-8">
+                        <h3 class="text-2xl font-semibold mb-6 flex items-center gap-3">
+                            <span class="material-icons text-primary-400">tune</span>
+                            Choose Background Removal Model
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="bg-models-grid">
+                            </div>
+                    </div>
+
+                    <div id="upscale-models" class="models-section hidden mb-8">
+                        <h3 class="text-2xl font-semibold mb-6 flex items-center gap-3">
+                            <span class="material-icons text-primary-400">tune</span>
+                            Choose Enhancement Model
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="upscale-models-grid">
+                            </div>
+                    </div>
+
+                    <div class="upload-area glass-morphism rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 hover:bg-opacity-10 mb-8" id="uploadArea">
+                        <div class="mb-6">
+                            <div class="inline-flex items-center justify-center w-24 h-24 bg-primary-500 bg-opacity-20 rounded-full mb-4">
+                                <span class="material-icons text-5xl text-primary-400">cloud_upload</span>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-semibold mb-2">Drop your image here</h3>
+                        <p class="text-gray-400 text-lg">or click to select a file • PNG, JPG, WEBP up to 10MB</p>
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                    </div>
+
+                    <div class="progress-container opacity-0 transform translate-y-5 transition-all duration-500 mb-8" id="progressContainer">
+                        <div class="glass-morphism rounded-2xl p-6">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="animate-spin">
+                                    <span class="material-icons text-primary-400">autorenew</span>
+                                </div>
+                                <span class="text-lg font-medium" id="progressText">Processing...</span>
+                            </div>
+                            <div class="w-full bg-surface-container-high rounded-full h-3 overflow-hidden">
+                                <div class="progress-gradient h-full rounded-full transition-all duration-300" id="progressFill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="error-message hidden bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30 text-red-400 p-4 rounded-2xl mb-8 text-center" id="errorMessage">
+                        </div>
+
+                    <div class="results-grid hidden grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8" id="resultsGrid">
+                        <div class="result-card text-center">
+                            <h3 class="text-xl font-semibold mb-4 flex items-center justify-center gap-2">
+                                <span class="material-icons text-gray-400">image</span>
+                                Original
+                            </h3>
+                            <div class="relative">
+                                <img id="originalImage" alt="Original" class="hidden w-full max-h-80 object-contain rounded-2xl shadow-2xl">
+                                <div class="result-placeholder w-full h-80 bg-surface-container-low rounded-2xl flex items-center justify-center text-gray-500" id="originalPlaceholder">
+                                    <div class="text-center">
+                                        <span class="material-icons text-6xl mb-4 opacity-50">image</span>
+                                        <p>Original image will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="result-card text-center">
+                            <h3 class="text-xl font-semibold mb-4 flex items-center justify-center gap-2">
+                                <span class="material-icons text-primary-400">auto_fix_high</span>
+                                Processed
+                            </h3>
+                            <div class="relative">
+                                <img id="processedImage" alt="Processed" class="hidden w-full max-h-80 object-contain rounded-2xl shadow-2xl">
+                                <div class="result-placeholder w-full h-80 bg-surface-container-low rounded-2xl flex items-center justify-center text-gray-500" id="processedPlaceholder">
+                                    <div class="text-center">
+                                        <span class="material-icons text-6xl mb-4 opacity-50">auto_fix_high</span>
+                                        <p>Processed image will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="download-btn hidden floating-action text-white font-semibold py-4 px-8 rounded-2xl flex items-center gap-3 mx-auto" id="downloadBtn">
+                        <span class="material-icons">download</span>
+                        Download Processed Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'bg-remove';
+        let selectedBgModel = 'isnet-general-use';
+        let selectedUpscaleModel = 'RealESRGAN_x4plus';
+        let processedImageUrl = null;
+        let currentTaskId = null;
+
+        const bgModels = {
+            'u2net': {name: 'General Purpose', description: 'Balanced speed and quality', icon: 'balance'},
+            'isnet-general-use': {name: 'High Accuracy', description: 'Best for complex images', icon: 'precision_manufacturing'},
+            'silueta': {name: 'Objects & Products', description: 'Perfect for items', icon: 'inventory_2'}
+        };
+
+        const upscaleModels = {
+            'RealESRGAN_x4plus': {name: 'Photo Enhancement 4x', description: 'Best for realistic photos', scale: 4, icon: 'photo_camera'},
+            'RealESRGAN_x4plus_anime_6B': {name: 'Anime Enhancement 4x', description: 'Perfect for illustrations', scale: 4, icon: 'brush'},
+            'RealESRGAN_x2plus': {name: 'Quick Enhancement 2x', description: 'Faster processing', scale: 2, icon: 'speed'}
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderModels();
+            setupEventListeners();
+        });
+
+        function renderModels() {
+            renderBgModels();
+            renderUpscaleModels();
+        }
+
+        function renderBgModels() {
+            const grid = document.getElementById('bg-models-grid');
+            grid.innerHTML = '';
+
+            Object.entries(bgModels).forEach(([key, model]) => {
+                const card = document.createElement('div');
+                card.className = `model-card-hover glass-morphism rounded-2xl p-6 cursor-pointer border-2 transition-all duration-300 ${
+                    selectedBgModel === key ? 'border-primary-500 bg-primary-500 bg-opacity-10' : 'border-transparent hover:border-primary-500 hover:border-opacity-50'
+                }`;
+                card.onclick = () => selectBgModel(key);
+                card.innerHTML = `
+                    <div class="text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-500 bg-opacity-20 rounded-2xl mb-4">
+                            <span class="material-icons text-2xl text-primary-400">${model.icon}</span>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-2">${model.name}</h4>
+                        <p class="text-gray-400 text-sm">${model.description}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderUpscaleModels() {
+            const grid = document.getElementById('upscale-models-grid');
+            grid.innerHTML = '';
+
+            Object.entries(upscaleModels).forEach(([key, model]) => {
+                const card = document.createElement('div');
+                card.className = `model-card-hover glass-morphism rounded-2xl p-6 cursor-pointer border-2 transition-all duration-300 ${
+                    selectedUpscaleModel === key ? 'border-primary-500 bg-primary-500 bg-opacity-10' : 'border-transparent hover:border-primary-500 hover:border-opacity-50'
+                }`;
+                card.onclick = () => selectUpscaleModel(key);
+                card.innerHTML = `
+                    <div class="text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-500 bg-opacity-20 rounded-2xl mb-4">
+                            <span class="material-icons text-2xl text-primary-400">${model.icon}</span>
+                        </div>
+                        <h4 class="text-lg font-semibold mb-2">${model.name}</h4>
+                        <p class="text-gray-400 text-sm">${model.description} (${model.scale}x)</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.remove('active');
+                t.classList.remove('bg-primary-500', 'bg-opacity-20', 'text-primary-300');
+                t.classList.add('text-gray-400', 'hover:text-white');
+            });
+
+            const activeTab = document.querySelector(`[data-tab="${tab}"]`);
+            activeTab.classList.add('active', 'bg-primary-500', 'bg-opacity-20', 'text-primary-300');
+            activeTab.classList.remove('text-gray-400', 'hover:text-white');
+
+            // Show/hide model sections
+            if (tab === 'bg-remove') {
+                document.getElementById('bg-models').classList.remove('hidden');
+                document.getElementById('upscale-models').classList.add('hidden');
+            } else {
+                document.getElementById('bg-models').classList.add('hidden');
+                document.getElementById('upscale-models').classList.remove('hidden');
+            }
+
+            // Reset UI
+            resetUI();
+        }
+
+        function selectBgModel(model) {
+            selectedBgModel = model;
+            renderBgModels();
+        }
+
+        function selectUpscaleModel(model) {
+            selectedUpscaleModel = model;
+            renderUpscaleModels();
+        }
+
+        function setupEventListeners() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+
+            uploadArea.onclick = () => fileInput.click();
+
+            uploadArea.ondragover = (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            };
+
+            uploadArea.ondragleave = () => {
+                uploadArea.classList.remove('drag-over');
+            };
+
+            uploadArea.ondrop = (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file) handleFile(file);
+            };
+
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) handleFile(file);
+            };
+
+            document.getElementById('downloadBtn').onclick = downloadImage;
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please select a valid image file');
+                return;
+            }
+
+            resetUI();
+            showOriginalImage(file);
+            processImage(file);
+        }
+
+        function showOriginalImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById('originalImage');
+                const placeholder = document.getElementById('originalPlaceholder');
+
+                img.src = e.target.result;
+                img.classList.remove('hidden');
+                placeholder.style.display = 'none';
+
+                const resultsGrid = document.getElementById('resultsGrid');
+                resultsGrid.classList.remove('hidden');
+                resultsGrid.classList.add('animate-fade-in-up');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processImage(file) {
+            currentTaskId = Date.now().toString();
+            showProgress();
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('operation', currentTab);
+            formData.append('task_id', currentTaskId);
+
+            if (currentTab === 'bg-remove') {
+                formData.append('bg_model', selectedBgModel);
+            } else {
+                formData.append('upscaler_model', selectedUpscaleModel);
+            }
+
+            try {
+                // Start progress monitoring
+                const progressInterval = setInterval(() => {
+                    checkProgress(currentTaskId);
+                }, 500);
+
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(progressInterval);
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showProcessedImage(data.processed_image_url);
+                    processedImageUrl = data.processed_image_url;
+                    const downloadBtn = document.getElementById('downloadBtn');
+                    downloadBtn.classList.remove('hidden');
+                    downloadBtn.classList.add('animate-scale-in');
+                }
+            } catch (error) {
+                showError('Processing failed. Please try again.');
+                console.error(error);
+            } finally {
+                hideProgress();
+            }
+        }
+
+        async function checkProgress(taskId) {
+            try {
+                const response = await fetch(`/api/progress/${taskId}`);
+                const data = await response.json();
+
+                if (data.progress !== undefined) {
+                    updateProgress(data.progress, data.message);
+                }
+            } catch (error) {
+                // Ignore progress check errors
+            }
+        }
+
+        function showProgress() {
+            const container = document.getElementById('progressContainer');
+            container.classList.remove('opacity-0', 'translate-y-5');
+            container.classList.add('opacity-100', 'translate-y-0');
+            updateProgress(0, 'Starting...');
+        }
+
+        function hideProgress() {
+            const container = document.getElementById('progressContainer');
+            container.classList.add('opacity-0', 'translate-y-5');
+            container.classList.remove('opacity-100', 'translate-y-0');
+        }
+
+        function updateProgress(percent, message) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = message;
+        }
+
+        function showProcessedImage(url) {
+            const img = document.getElementById('processedImage');
+            const placeholder = document.getElementById('processedPlaceholder');
+
+            img.src = url;
+            img.classList.remove('hidden');
+            img.classList.add('animate-scale-in');
+            placeholder.style.display = 'none';
+
+            updateProgress(100, 'Processing complete!');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            errorDiv.classList.add('animate-slide-up');
+            hideProgress();
+        }
+
+        function resetUI() {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.classList.add('hidden');
+            errorDiv.classList.remove('animate-slide-up');
+
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.classList.add('hidden');
+            downloadBtn.classList.remove('animate-scale-in');
+
+            const resultsGrid = document.getElementById('resultsGrid');
+            resultsGrid.classList.add('hidden');
+            resultsGrid.classList.remove('animate-fade-in-up');
+
+            hideProgress();
+
+            // Reset images
+            document.getElementById('originalImage').classList.add('hidden');
+            document.getElementById('processedImage').classList.add('hidden');
+            document.getElementById('originalPlaceholder').style.display = 'flex';
+            document.getElementById('processedPlaceholder').style.display = 'flex';
+
+            processedImageUrl = null;
+        }
+
+        function downloadImage() {
+            if (processedImageUrl) {
+                const link = document.createElement('a');
+                link.href = processedImageUrl;
+                link.download = `processed_${currentTab}_${Date.now()}.png`;
+                link.click();
+            }
+        }
+    </script>
+</body>
+</html>
