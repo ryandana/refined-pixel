@@ -67,22 +67,6 @@
 
     * Press `Ctrl + C` in the terminal to stop the server.
 
-## 📂  Directory Structure
-refined-pixel/
-├── main.py           # Main application
-├── setup.py          # Installation script
-├── run.sh            # Run with CPU
-├── run_cuda.sh       # Run with CUDA
-├── install.sh        # Alternative install script
-├── requirements.txt  # Python dependencies
-├── templates/        # HTML templates
-│   └── index.html    # Main UI
-├── models/           # AI models
-│   ├── upscaler/     # Upscaling models
-│   └── remover/      # Background removal models
-├── uploads/          # Temporary storage for uploaded images
-└── processed/        # Storage for processed images
-
 ## ⚠️  Important Notes
 
 * **Model Download:** The setup script will download the necessary AI models. Ensure you have a stable internet connection.
@@ -106,4 +90,4 @@ refined-pixel/
 
 ## 📝  License
 
-* This project is open-source and licensed under the \[License Name].
+* This project is open-source and not licensed.
